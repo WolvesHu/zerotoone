@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+    <property name="driverClassName">com.mysql.jdbc.Driver</property>
+    <property name="url">jdbc:mysql://172.16.32.103:3306/envision_track?useUnicode=true&amp;characterEncoding=utf8</property>
+    <property name="username">root</property>
+    <property name="password">23d8920HSDf7321</property>
+</database>
