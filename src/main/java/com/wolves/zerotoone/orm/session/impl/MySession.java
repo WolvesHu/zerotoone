@@ -1,4 +1,4 @@
-package com.wolves.zerotoone.orm.session;
+package com.wolves.zerotoone.orm.session.impl;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -9,6 +9,7 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 
 import com.wolves.zerotoone.orm.proxy.MapperProxy;
+import com.wolves.zerotoone.orm.session.Session;
 
 public class MySession<T> implements Session<T> {
 	private DataSource dataSource;

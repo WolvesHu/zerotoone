@@ -2,8 +2,8 @@ package com.wolves.zerotoone.orm.test;
 
 import com.wolves.test.zerotoone.dao.UserDAO;
 import com.wolves.zerotoone.orm.session.Session;
-import com.wolves.zerotoone.orm.session.factory.MySessionFactory;
 import com.wolves.zerotoone.orm.session.factory.SessionFactory;
+import com.wolves.zerotoone.orm.session.factory.impl.MySessionFactory;
 
 public class DataSourceTest {
 
