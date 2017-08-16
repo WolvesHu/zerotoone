@@ -1,4 +1,4 @@
-package com.wolves.zerotoone.orm.parse;
+package com.wolves.zerotoone.orm.builder;
 
 import java.io.InputStream;
 
@@ -10,11 +10,13 @@ import org.dom4j.io.SAXReader;
 
 import com.wolves.zerotoone.orm.datasource.MyDataSource;
 
+
+
 public class XMLConfigBuilder {
 	private static ClassLoader loader = ClassLoader.getSystemClassLoader();
-
 	public static DataSource build(String resource) {
 		try {
+			
 			InputStream stream = loader.getResourceAsStream(resource);
 			SAXReader reader = new SAXReader();
 			Document document = reader.read(stream);

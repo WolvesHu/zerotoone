@@ -2,7 +2,7 @@ package com.wolves.zerotoone.orm.session.factory.impl;
 
 import javax.sql.DataSource;
 
-import com.wolves.zerotoone.orm.parse.XMLConfigBuilder;
+import com.wolves.zerotoone.orm.builder.XMLConfigBuilder;
 import com.wolves.zerotoone.orm.session.Session;
 import com.wolves.zerotoone.orm.session.factory.SessionFactory;
 import com.wolves.zerotoone.orm.session.impl.MySession;
