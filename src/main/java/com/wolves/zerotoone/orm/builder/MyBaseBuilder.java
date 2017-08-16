@@ -2,18 +2,18 @@ package com.wolves.zerotoone.orm.builder;
 
 import org.apache.ibatis.type.TypeAliasRegistry;
 
-import com.wolves.zerotoone.orm.mapping.Configuration;
+import com.wolves.zerotoone.orm.mapping.MyConfiguration;
 
-public abstract class BaseBuilder {
-	protected final Configuration configuration;
+public abstract class MyBaseBuilder {
+	protected final MyConfiguration configuration;
 	protected final TypeAliasRegistry typeAliasRegistry;
 
-	public BaseBuilder(Configuration configuration) {
+	public MyBaseBuilder(MyConfiguration configuration) {
 		this.configuration = configuration;
 		this.typeAliasRegistry = this.configuration.getTypeAliasRegistry();
 	}
 
-	public Configuration getConfiguration() {
+	public MyConfiguration getConfiguration() {
 		return configuration;
 	}
 }

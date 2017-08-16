@@ -2,7 +2,7 @@ package com.wolves.zerotoone.orm.session.factory.impl;
 
 import javax.sql.DataSource;
 
-import com.wolves.zerotoone.orm.builder.XMLConfigBuilder;
+import com.wolves.zerotoone.orm.builder.MyXMLConfigBuilder;
 import com.wolves.zerotoone.orm.session.Session;
 import com.wolves.zerotoone.orm.session.factory.SessionFactory;
 import com.wolves.zerotoone.orm.session.impl.MySession;
@@ -11,7 +11,7 @@ public class MySessionFactory implements SessionFactory {
 	private DataSource config;
 	
 	public MySessionFactory(String resource) {
-		config = XMLConfigBuilder.build(resource);
+//		config = MyXMLConfigBuilder.build(resource);
 	}
 
 	@Override

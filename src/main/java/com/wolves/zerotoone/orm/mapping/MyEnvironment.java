@@ -2,11 +2,11 @@ package com.wolves.zerotoone.orm.mapping;
 
 import javax.sql.DataSource;
 
-public final class Environment {
+public final class MyEnvironment {
 	private DataSource dataSource;
 	private String id;
 
-	public Environment(String id, DataSource dataSource) {
+	public MyEnvironment(String id, DataSource dataSource) {
 		if (id == null) {
 			throw new IllegalArgumentException("Parameter 'id' must not be null");
 		}
@@ -21,9 +21,8 @@ public final class Environment {
 		private DataSource dataSource;
 		private String id;
 
-		public Builder id(String id) {
+		public Builder(String id) {
 			this.id = id;
-			return this;
 		}
 
 		public Builder dataSource(DataSource dataSource) {
@@ -31,8 +30,8 @@ public final class Environment {
 			return this;
 		}
 
-		public Environment build() {
-			return new Environment(id, dataSource);
+		public MyEnvironment build() {
+			return new MyEnvironment(id, dataSource);
 		}
 	}
 

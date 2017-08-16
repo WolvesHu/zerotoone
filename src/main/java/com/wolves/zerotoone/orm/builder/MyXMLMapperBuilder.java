@@ -8,15 +8,13 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.wolves.zerotoone.orm.datasource.MyDataSource;
+import com.wolves.zerotoone.orm.datasource.MyDataSourceFactory;
 
-
-
-public class XMLConfigBuilder {
+public class MyXMLMapperBuilder {
 	private static ClassLoader loader = ClassLoader.getSystemClassLoader();
+
 	public static DataSource build(String resource) {
 		try {
-			
 			InputStream stream = loader.getResourceAsStream(resource);
 			SAXReader reader = new SAXReader();
 			Document document = reader.read(stream);
@@ -61,7 +59,7 @@ public class XMLConfigBuilder {
 				throw new RuntimeException("[database]: <property> unknown name");
 			}
 		}
-		return new MyDataSource(driverClassName, url, username, password);
+		return new MyDataSourceFactory(driverClassName, url, username, password);
 	}
 
 	private static String getValue(Element element) {
