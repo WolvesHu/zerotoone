@@ -1,24 +1,35 @@
 package com.wolves.zerotoone.orm.builder;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import javax.sql.DataSource;
 
 import org.apache.ibatis.builder.BuilderException;
+import org.apache.ibatis.builder.xml.XMLMapperEntityResolver;
+import org.apache.ibatis.datasource.DataSourceFactory;
 import org.apache.ibatis.executor.ErrorContext;
+import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.parsing.XPathParser;
-import org.apache.ibatis.transaction.TransactionFactory;
 
 import com.wolves.zerotoone.orm.datasource.MyDataSourceFactory;
 import com.wolves.zerotoone.orm.mapping.MyConfiguration;
 import com.wolves.zerotoone.orm.mapping.MyEnvironment;
+import com.wolves.zerotoone.orm.parse.MyXNode;
+import com.wolves.zerotoone.orm.parse.MyXPathParser;
+import com.wolves.zerotoone.orm.xml.MyXMLMapperEntityResolver;
 
 public class MyXMLConfigBuilder extends MyBaseBuilder {
-	private XPathParser parser;
+	private MyXPathParser parser;
 	private String environment;
 
-	private MyXMLConfigBuilder(XPathParser parser, String environment, Properties props) {
+	public MyXMLConfigBuilder(InputStream inputStream, String environment, Properties props) {
+		this(new MyXPathParser(inputStream, true, props, new MyXMLMapperEntityResolver()), environment, props);
+	}
+
+	private MyXMLConfigBuilder(MyXPathParser parser, String environment, Properties props) {
 		super(new MyConfiguration());
 		ErrorContext.instance().resource("SQL Mapper Configuration");
 		this.configuration.setVariables(props);
@@ -31,31 +42,65 @@ public class MyXMLConfigBuilder extends MyBaseBuilder {
 		return configuration;
 	}
 
-	private void parseConfiguration(XNode root) {
-		propertiesElement(root.evalNode("properties"));
-		environmentsElement(root.evalNode("environments"));
+	private void parseConfiguration(MyXNode root) {
+		try {
+			propertiesElement(root.evalNode("properties"));
+			environmentsElement(root.evalNode("environments"));
+		} catch (Exception e) {
+			throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
+		}
+
 	}
 
-	private void environmentsElement(XNode context) {
+	private void propertiesElement(MyXNode context) throws IOException {
+		if (context != null) {
+			Properties defaults = context.getChildrenAsProperties();
+			String resource = context.getStringAttribute("resource");
+			String url = context.getStringAttribute("url");
+			if (resource != null && url != null) {
+				throw new BuilderException(
+						"The properties element cannot specify both a URL and a resource based property file reference.  Please specify one or the other.");
+			}
+			if (resource != null) {
+				defaults.putAll(Resources.getResourceAsProperties(resource));
+			} else if (url != null) {
+				defaults.putAll(Resources.getUrlAsProperties(url));
+			}
+			Properties vars = configuration.getVariables();
+			if (vars != null) {
+				defaults.putAll(vars);
+			}
+			parser.setVariables(defaults);
+			configuration.setVariables(defaults);
+		}
+	}
+
+	private void environmentsElement(MyXNode context) throws Exception {
 		if (context != null) {
 			if (environment == null) {
 				environment = context.getStringAttribute("default");
 			}
-			for (XNode child : context.getChildren()) {
+			for (MyXNode child : context.getChildren()) {
 				String id = child.getStringAttribute("id");
 				if (isSpecifiedEnvironment(id)) {
-					  MyDataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
-			          DataSource dataSource = dsFactory.getDataSource();
-			          MyEnvironment.Builder environmentBuilder = new MyEnvironment.Builder(id).dataSource(dataSource);
-			          configuration.setEnvironment(environmentBuilder.build());
+					MyDataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
+					DataSource dataSource = dsFactory.getDataSource();
+					MyEnvironment.Builder environmentBuilder = new MyEnvironment.Builder(id).dataSource(dataSource);
+					configuration.setEnvironment(environmentBuilder.build());
 				}
 			}
 		}
 	}
 
-	private MyDataSourceFactory dataSourceElement(XNode evalNode) {
-		// TODO Auto-generated method stub
-		return null;
+	private MyDataSourceFactory dataSourceElement(MyXNode context) throws Exception {
+		if (context != null) {
+			String type = context.getStringAttribute("type");
+			Properties props = context.getChildrenAsProperties();
+			MyDataSourceFactory factory = (MyDataSourceFactory) resolveClass(type).newInstance();
+			factory.setProperties(props);
+			return factory;
+		}
+		throw new BuilderException("Environment declaration requires a DataSourceFactory.");
 	}
 
 	private boolean isSpecifiedEnvironment(String id) {

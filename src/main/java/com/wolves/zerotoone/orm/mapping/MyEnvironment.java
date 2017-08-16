@@ -2,7 +2,7 @@ package com.wolves.zerotoone.orm.mapping;
 
 import javax.sql.DataSource;
 
-public final class MyEnvironment {
+public class MyEnvironment {
 	private DataSource dataSource;
 	private String id;
 
@@ -17,7 +17,7 @@ public final class MyEnvironment {
 		this.dataSource = dataSource;
 	}
 
-	public class Builder {
+	public static class Builder {
 		private DataSource dataSource;
 		private String id;
 
