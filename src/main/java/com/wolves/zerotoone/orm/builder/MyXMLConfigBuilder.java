@@ -7,12 +7,8 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.apache.ibatis.builder.BuilderException;
-import org.apache.ibatis.builder.xml.XMLMapperEntityResolver;
-import org.apache.ibatis.datasource.DataSourceFactory;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.parsing.XNode;
-import org.apache.ibatis.parsing.XPathParser;
 
 import com.wolves.zerotoone.orm.datasource.MyDataSourceFactory;
 import com.wolves.zerotoone.orm.mapping.MyConfiguration;

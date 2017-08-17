@@ -2,8 +2,6 @@ package com.wolves.zerotoone.orm.mapping;
 
 import java.util.Properties;
 
-import org.apache.ibatis.builder.BuilderException;
-import org.apache.ibatis.datasource.pooled.PooledDataSourceFactory;
 import org.apache.ibatis.type.TypeAliasRegistry;
 
 import com.wolves.zerotoone.orm.datasource.MyUnpooledDataSourceFactory;
