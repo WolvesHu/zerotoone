@@ -43,6 +43,7 @@ public class MyPooledDataSource implements DataSource {
 	 */
 	protected int poolPingConnectionsNotUsedFor;
 	private int expectedConnectionTypeCode;
+	protected int poolTimeToWait = 20000;
 
 	public MyPooledDataSource() {
 		dataSource = new MyUnpooledDataSource();
@@ -54,13 +55,14 @@ public class MyPooledDataSource implements DataSource {
 
 	@Override
 	public Connection getConnection() throws SQLException {
-		 return popConnection(dataSource.getUsername(), dataSource.getPassword()).getProxyConnection();
+		return popConnection(dataSource.getUsername(), dataSource.getPassword()).getProxyConnection();
 	}
 
 	@Override
 	public Connection getConnection(String username, String password) throws SQLException {
 		return popConnection(username, password).getProxyConnection();
 	}
+
 	protected void pushConnection(MyPooledConnection conn) throws SQLException {
 		synchronized (state) {
 			state.activeConnections.remove(conn);
@@ -89,6 +91,7 @@ public class MyPooledDataSource implements DataSource {
 	}
 
 	private MyPooledConnection popConnection(String username, String password) throws SQLException {
+		boolean countedWait = false;
 		MyPooledConnection conn = null;
 		long t = System.currentTimeMillis();
 		int localBadConnectionCount = 0;
@@ -103,7 +106,33 @@ public class MyPooledDataSource implements DataSource {
 						MyPooledConnection oldestActiveConnection = state.activeConnections.get(0);
 						long longestCheckoutTime = oldestActiveConnection.getCheckoutTime();
 						if (longestCheckoutTime > poolMaximumCheckoutTime) {
-
+							state.claimedOverdueConnectionCount++;
+							state.accumulatedCheckoutTimeOfOverdueConnections += longestCheckoutTime;
+							state.accumulatedCheckoutTime += longestCheckoutTime;
+							state.activeConnections.remove(oldestActiveConnection);
+							if (!oldestActiveConnection.getRealConnection().getAutoCommit()) {
+								try {
+									oldestActiveConnection.getRealConnection().rollback();
+								} catch (SQLException e) {
+								}
+							}
+							conn = new MyPooledConnection(oldestActiveConnection.getRealConnection(), this);
+							conn.setCreatedTimestamp(oldestActiveConnection.getCreatedTimestamp());
+							conn.setLastUsedTimestamp(oldestActiveConnection.getLastUsedTimestamp());
+							oldestActiveConnection.invalidate();
+						} else {
+							// Must wait
+							try {
+								if (!countedWait) {
+									state.hadToWaitCount++;
+									countedWait = true;
+								}
+								long wt = System.currentTimeMillis();
+								state.wait(poolTimeToWait);
+								state.accumulatedWaitTime += System.currentTimeMillis() - wt;
+							} catch (InterruptedException e) {
+								break;
+							}
 						}
 					}
 				}
@@ -125,7 +154,7 @@ public class MyPooledDataSource implements DataSource {
 						conn = null;
 						if (localBadConnectionCount > (poolMaximumIdleConnections + 3)) {
 							throw new SQLException(
-									"PooledDataSource: Could not get a good connection to the database.");
+									"MyPooledDataSource: Could not get a good connection to the database.");
 						}
 					}
 				}
@@ -188,39 +217,87 @@ public class MyPooledDataSource implements DataSource {
 
 	@Override
 	public int getLoginTimeout() throws SQLException {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void setLogWriter(PrintWriter arg0) throws SQLException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void setLoginTimeout(int arg0) throws SQLException {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public <T> T unwrap(Class<T> arg0) throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
+	public void setDriver(String driver) {
+		dataSource.setDriver(driver);
+		forceCloseAll();
+	}
 
+	public void setUrl(String url) {
+		dataSource.setUrl(url);
+		forceCloseAll();
+	}
+
+	public void setUsername(String username) {
+		dataSource.setUsername(username);
+		forceCloseAll();
+	}
+
+	public void setPassword(String password) {
+		dataSource.setPassword(password);
+		forceCloseAll();
+	}
+
+	private void forceCloseAll() {
+		synchronized (state) {
+			expectedConnectionTypeCode = assembleConnectionTypeCode(dataSource.getUrl(), dataSource.getUsername(),
+					dataSource.getPassword());
+			for (int i = state.activeConnections.size(); i > 0; i--) {
+				try {
+					MyPooledConnection conn = state.activeConnections.remove(i - 1);
+					conn.invalidate();
+
+					Connection realConn = conn.getRealConnection();
+					if (!realConn.getAutoCommit()) {
+						realConn.rollback();
+					}
+					realConn.close();
+				} catch (Exception e) {
+					// ignore
+				}
+			}
+			for (int i = state.idleConnections.size(); i > 0; i--) {
+				try {
+					MyPooledConnection conn = state.idleConnections.remove(i - 1);
+					conn.invalidate();
+
+					Connection realConn = conn.getRealConnection();
+					if (!realConn.getAutoCommit()) {
+						realConn.rollback();
+					}
+					realConn.close();
+				} catch (Exception e) {
+					// ignore
+				}
+			}
+		}
+
+	}
 }

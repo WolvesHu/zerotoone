@@ -16,29 +16,33 @@ import com.wolves.zerotoone.orm.session.factory.impl.SessionFactory;
 
 public class DataSourceTest {
 	private static Reader reader;
-	private static SqlSessionFactory sqlSessionFactory;  
+	private static SqlSessionFactory sqlSessionFactory;
 	private static SessionFactory sessionfactory;
 	private static ClassLoader loader = ClassLoader.getSystemClassLoader();
-    static {  
-        try {  
-//            reader = Resources.getResourceAsReader("conf/orm2.xml");  
-//            sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);  
-        	InputStream stream =loader.getResourceAsStream("conf/orm.xml");
-        	sessionfactory = new MySessionFactoryBuilder().build(stream);
-        } catch (Exception e) {  
-            e.printStackTrace();  
-        }  
-    }  
+	static {
+		try {
+			// reader = Resources.getResourceAsReader("conf/orm2.xml");
+			// sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
+			InputStream stream = loader.getResourceAsStream("conf/orm.xml");
+			sessionfactory = new MySessionFactoryBuilder().build(stream);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static void main(String args[]) throws Exception {
-		Session<UserDAO> session = sessionfactory.openSession();
-		UserDAO userDao = session.getMapper(UserDAO.class);
-		userDao.getUserById("297e7fa53bae1441013bb28e73835ffb");
-//		SqlSession openSession = sqlSessionFactory.openSession();
-//		UserDAO userDao = openSession.getMapper(UserDAO.class);
-//		userDao.getUserById("297e7fa53bae1441013bb28e73835ffb");
 		
-		
-		
+		for (int i = 0; i < 20; i++) {
+			Session<UserDAO> session = sessionfactory.openSession();
+			UserDAO userDao = session.getMapper(UserDAO.class);
+			userDao.getUserById("297e7fa53bae1441013bb28e73835ffb");
+			System.out.println("================="+i+"=================");
+		}
+
+		// SqlSession openSession = sqlSessionFactory.openSession();
+		// UserDAO userDao = openSession.getMapper(UserDAO.class);
+		// userDao.getUserById("297e7fa53bae1441013bb28e73835ffb");
+
 	}
 
 }

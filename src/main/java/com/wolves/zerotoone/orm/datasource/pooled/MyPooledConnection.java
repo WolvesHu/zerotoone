@@ -32,6 +32,7 @@ class MyPooledConnection implements InvocationHandler {
 		 * 那么这个代理对象就宣称实现了该接口(多态)，这样我就能调用这组接口中的方法了
 		 * h:表示的是当我这个动态代理对象在调用方法的时候，会关联到哪一个InvocationHandler对象上
 		 */
+		this.valid = true;
 		this.proxyConnection = (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), IFACES, this);
 		this.createdTimestamp = System.currentTimeMillis();
 		this.lastUsedTimestamp = System.currentTimeMillis();
