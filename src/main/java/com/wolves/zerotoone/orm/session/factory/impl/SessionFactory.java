@@ -1,7 +1,7 @@
 package com.wolves.zerotoone.orm.session.factory.impl;
 
-import com.wolves.zerotoone.orm.session.Session;
+import com.wolves.zerotoone.orm.session.MySqlSession;
 
 public interface SessionFactory {
-	<T> Session<T> openSession();
+	<T> MySqlSession openSession();
 }

@@ -6,6 +6,7 @@ import org.apache.ibatis.type.TypeAliasRegistry;
 
 import com.wolves.zerotoone.orm.datasource.pooled.MyPooledDataSourceFactory;
 import com.wolves.zerotoone.orm.datasource.unpooled.MyUnpooledDataSourceFactory;
+import com.wolves.zerotoone.orm.transaction.MyManagedTransactionFactory;
 
 public class MyConfiguration {
 	protected MyEnvironment environment;
@@ -15,6 +16,7 @@ public class MyConfiguration {
 	public MyConfiguration() {
 		typeAliasRegistry.registerAlias("UNPOOLED", MyUnpooledDataSourceFactory.class);
 		typeAliasRegistry.registerAlias("POOLED", MyPooledDataSourceFactory.class);
+		typeAliasRegistry.registerAlias("MANAGED", MyManagedTransactionFactory.class);
 	}
 
 	public MyConfiguration(MyEnvironment environment) {

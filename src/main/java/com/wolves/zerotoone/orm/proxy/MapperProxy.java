@@ -7,12 +7,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.wolves.zerotoone.orm.annotation.Sql;
-import com.wolves.zerotoone.orm.session.Session;
+import com.wolves.zerotoone.orm.session.MySqlSession;
 
 public class MapperProxy<T> implements InvocationHandler {
-	private Session<?> session;
+	private MySqlSession session;
 	@SuppressWarnings("unchecked")
-	public static <T> T newInstance(Class<T> clazz, Session<?> session) {
+	public static <T> T newInstance(Class<T> clazz, MySqlSession session) {
 		 MapperProxy<T> proxy = new MapperProxy<>();
 		 proxy.session = session;
 		 return (T)Proxy.newProxyInstance(clazz.getClassLoader(), new Class[] { clazz }, proxy);
@@ -39,7 +39,7 @@ public class MapperProxy<T> implements InvocationHandler {
 	    }
 	    
 	    System.out.println(sql);
-        session.exec(sql);
+//        session.exec(sql);
 		return null;
 	}
 

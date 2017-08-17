@@ -9,12 +9,14 @@ import javax.sql.DataSource;
 import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.transaction.TransactionFactory;
 
 import com.wolves.zerotoone.orm.datasource.MyDataSourceFactory;
 import com.wolves.zerotoone.orm.mapping.MyConfiguration;
 import com.wolves.zerotoone.orm.mapping.MyEnvironment;
 import com.wolves.zerotoone.orm.parse.MyXNode;
 import com.wolves.zerotoone.orm.parse.MyXPathParser;
+import com.wolves.zerotoone.orm.transaction.MyTransactionFactory;
 import com.wolves.zerotoone.orm.xml.MyXMLMapperEntityResolver;
 
 public class MyXMLConfigBuilder extends MyBaseBuilder {
@@ -79,6 +81,7 @@ public class MyXMLConfigBuilder extends MyBaseBuilder {
 			for (MyXNode child : context.getChildren()) {
 				String id = child.getStringAttribute("id");
 				if (isSpecifiedEnvironment(id)) {
+					MyTransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
 					MyDataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
 					DataSource dataSource = dsFactory.getDataSource();
 					MyEnvironment.Builder environmentBuilder = new MyEnvironment.Builder(id).dataSource(dataSource);
@@ -86,6 +89,17 @@ public class MyXMLConfigBuilder extends MyBaseBuilder {
 				}
 			}
 		}
+	}
+
+	private MyTransactionFactory transactionManagerElement(MyXNode context) throws Exception {
+		if (context != null) {
+			String type = context.getStringAttribute("type");
+			Properties props = context.getChildrenAsProperties();
+			MyTransactionFactory factory = (MyTransactionFactory) resolveClass(type).newInstance();
+			factory.setProperties(props);
+			return factory;
+		}
+		throw new BuilderException("Environment declaration requires a TransactionFactory.");
 	}
 
 	private MyDataSourceFactory dataSourceElement(MyXNode context) throws Exception {
