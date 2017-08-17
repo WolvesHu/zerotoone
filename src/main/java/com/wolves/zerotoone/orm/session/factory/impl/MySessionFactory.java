@@ -5,9 +5,8 @@ import org.apache.ibatis.exceptions.ExceptionFactory;
 import org.apache.ibatis.executor.ErrorContext;
 import com.wolves.zerotoone.orm.mapping.MyConfiguration;
 import com.wolves.zerotoone.orm.mapping.MyEnvironment;
+import com.wolves.zerotoone.orm.session.MySession;
 import com.wolves.zerotoone.orm.session.Session;
-import com.wolves.zerotoone.orm.session.factory.SessionFactory;
-import com.wolves.zerotoone.orm.session.impl.MySession;
 
 public class MySessionFactory implements SessionFactory {
 	private final MyConfiguration configuration;

@@ -9,7 +9,6 @@ import org.apache.ibatis.executor.ErrorContext;
 
 import com.wolves.zerotoone.orm.builder.MyXMLConfigBuilder;
 import com.wolves.zerotoone.orm.mapping.MyConfiguration;
-import com.wolves.zerotoone.orm.session.factory.SessionFactory;
 
 public class MySessionFactoryBuilder {
 	public SessionFactory build(InputStream inputStream) {

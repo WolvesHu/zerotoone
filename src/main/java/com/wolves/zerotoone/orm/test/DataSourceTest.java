@@ -10,9 +10,9 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import com.wolves.test.zerotoone.dao.UserDAO;
 import com.wolves.zerotoone.orm.session.Session;
-import com.wolves.zerotoone.orm.session.factory.SessionFactory;
 import com.wolves.zerotoone.orm.session.factory.impl.MySessionFactory;
 import com.wolves.zerotoone.orm.session.factory.impl.MySessionFactoryBuilder;
+import com.wolves.zerotoone.orm.session.factory.impl.SessionFactory;
 
 public class DataSourceTest {
 	private static Reader reader;

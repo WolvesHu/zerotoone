@@ -7,7 +7,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
     <environments default="development">  
         <environment id="development">  
         	<transactionManager type="MANAGED"/>
-            <dataSource type="UNPOOLED">  
+            <dataSource type="POOLED">  
                 <property name="driver" value="com.mysql.jdbc.Driver" />  
                 <property name="url" value="jdbc:mysql://172.16.32.103:3306/envision_track?useUnicode=true&amp;characterEncoding=utf8" />  
                 <property name="username" value="root" />  
