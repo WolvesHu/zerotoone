@@ -61,17 +61,45 @@ public class MyXNode {
 		}
 		return data;
 	}
-	
-	private String getBodyData(Node child) {
-	    if (child.getNodeType() == Node.CDATA_SECTION_NODE
-	        || child.getNodeType() == Node.TEXT_NODE) {
-	      String data = ((CharacterData) child).getData();
-	      data = PropertyParser.parse(data, variables);
-	      return data;
-	    }
-	    return null;
-	  }
 
+	private String getBodyData(Node child) {
+		if (child.getNodeType() == Node.CDATA_SECTION_NODE || child.getNodeType() == Node.TEXT_NODE) {
+			String data = ((CharacterData) child).getData();
+			data = PropertyParser.parse(data, variables);
+			return data;
+		}
+		return null;
+	}
+
+	public String getValueBasedIdentifier() {
+		StringBuilder builder = new StringBuilder();
+		MyXNode current = this;
+		while (current != null) {
+			if (current != this) {
+				builder.insert(0, "_");
+			}
+			//TODO BD
+			String value = current.getStringAttribute("id",current.getStringAttribute("value", current.getStringAttribute("property", null)));
+			if (value != null) {
+				value = value.replace('.', '_');
+				builder.insert(0, "]");
+				builder.insert(0, value);
+				builder.insert(0, "[");
+			}
+			builder.insert(0, current.getName());
+			current = current.getParent();
+		}
+		return builder.toString();
+	}
+
+	public MyXNode getParent() {
+		Node parent = node.getParentNode();
+		if (parent == null || !(parent instanceof Element)) {
+			return null;
+		} else {
+			return new MyXNode(xpathParser, parent, variables);
+		}
+	}
 
 	public List<MyXNode> evalNodes(String expression) {
 		return xpathParser.evalNodes(node, expression);

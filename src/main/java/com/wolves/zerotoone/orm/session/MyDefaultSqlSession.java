@@ -5,20 +5,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.exceptions.TooManyResultsException;
-import org.apache.ibatis.executor.Executor;
-import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
+import com.wolves.zerotoone.orm.executor.MyExecutor;
 import com.wolves.zerotoone.orm.mapping.MyConfiguration;
 
 public class MyDefaultSqlSession implements MySqlSession {
 	private MyConfiguration configuration;
-	private Executor executor;
+	private MyExecutor executor;
 	private boolean autoCommit;
 	private boolean dirty;
 
-	public MyDefaultSqlSession(MyConfiguration configuration, Executor executor, boolean autoCommit) {
+	public MyDefaultSqlSession(MyConfiguration configuration, MyExecutor executor, boolean autoCommit) {
 		this.configuration = configuration;
 		this.executor = executor;
 		this.dirty = false;
@@ -99,8 +98,8 @@ public class MyDefaultSqlSession implements MySqlSession {
 	}
 
 	@Override
-	public <T> T getMapper(Class<T> clazz) {
-		return null;
+	public <T> T getMapper(Class<T> type) {
+		 return configuration.<T>getMapper(type, this);
 	}
 
 }

@@ -21,8 +21,8 @@ public class DataSourceTest {
 	private static ClassLoader loader = ClassLoader.getSystemClassLoader();
 	static {
 		try {
-			// reader = Resources.getResourceAsReader("conf/orm2.xml");
-			// sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
+//			 reader = Resources.getResourceAsReader("conf/orm.xml");
+//			 sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
 			InputStream stream = loader.getResourceAsStream("conf/orm.xml");
 			sessionfactory = new MySessionFactoryBuilder().build(stream);
 		} catch (Exception e) {
@@ -32,12 +32,12 @@ public class DataSourceTest {
 
 	public static void main(String args[]) throws Exception {
 		
-		for (int i = 0; i < 20; i++) {
-			MySqlSession session = sessionfactory.openSession();
-			UserDAO userDao = session.getMapper(UserDAO.class);
-			userDao.getUserById("297e7fa53bae1441013bb28e73835ffb");
-			System.out.println("================="+i+"=================");
-		}
+//		for (int i = 0; i < 20; i++) {
+//			MySqlSession session = sessionfactory.openSession();
+//			UserDAO userDao = session.getMapper(UserDAO.class);
+//			userDao.getUserById("297e7fa53bae1441013bb28e73835ffb");
+//			System.out.println("================="+i+"=================");
+//		}
 
 		 SqlSession openSession = sqlSessionFactory.openSession();
 		 UserDAO userDao = openSession.getMapper(UserDAO.class);

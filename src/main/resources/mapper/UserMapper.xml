@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
 <mapper namespace="com.wolves.test.zerotoone.dao.UserDAO">
-	<resultMap id="UserResultMap" type="com.wolves.test.zerotoone.model.User" >
+	<resultMap id="UserResultMap" type="com.wolves.test.zerotoone.vo.User" >
 	 	<id column="ID" property="id" jdbcType="VARCHAR" />
-        <result column="AD_ID" property="adid" jdbcType="VARCHAR" />
+        <result column="AD_ID" property="adid" jdbcType="VARCHAR"  />
         <result column="BODY_SYSTEM_CODE" property="bodySystemCode" jdbcType="VARCHAR" />
         <result column="BODY_SYSTEM_NAME" property="bodySystemName" jdbcType="VARCHAR" />
         <result column="CNN_NAME" property="cnnname" jdbcType="VARCHAR" />
@@ -21,10 +21,8 @@
         <result column="POSITION" property="position" jdbcType="VARCHAR" />
         <result column="TEL" property="tel" jdbcType="VARCHAR" />
         <result column="STATE" property="state" jdbcType="SMALLINT" />
-	
 	</resultMap>
-	
-	<insert id="insertUser" parameterType="java.util.Map">
+	<insert id="insertUser" parameterType="java.util.Map" >
     	insert into t_user(ID,AD_ID,BODY_SYSTEM_CODE,BODY_SYSTEM_NAME,CNN_NAME,DEPT_LEADER,
     	DEPT_LEADER_CODE,DEPT_CODE,DEPT_NAME,EMAIL,EN_NAME,FRIST_LEADER,FRIST_LEADER_CODE,
     	GENDER,OBJ_NO,POSITION,TEL) values

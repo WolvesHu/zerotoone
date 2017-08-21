@@ -7,8 +7,10 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.apache.ibatis.builder.BuilderException;
+import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.transaction.TransactionFactory;
 
 import com.wolves.zerotoone.orm.datasource.MyDataSourceFactory;
@@ -44,10 +46,28 @@ public class MyXMLConfigBuilder extends MyBaseBuilder {
 		try {
 			propertiesElement(root.evalNode("properties"));
 			environmentsElement(root.evalNode("environments"));
+			mapperElement(root.evalNode("mappers"));
 		} catch (Exception e) {
 			throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
 		}
 
+	}
+
+	private void mapperElement(MyXNode parent) throws IOException {
+		if (parent != null) {
+			for (MyXNode child : parent.getChildren()) {
+				if ("package".equals(child.getName())) {
+					String mapperPackage = child.getStringAttribute("name");
+					configuration.addMappers(mapperPackage);
+				} else {
+					String resource = child.getStringAttribute("resource");
+					InputStream inputStream = Resources.getResourceAsStream(resource);
+					MyXMLMapperBuilder mapperParser = new MyXMLMapperBuilder(inputStream, configuration, resource,
+							configuration.getSqlFragments());
+					mapperParser.parse();
+				}
+			}
+		}
 	}
 
 	private void propertiesElement(MyXNode context) throws IOException {
@@ -84,7 +104,7 @@ public class MyXMLConfigBuilder extends MyBaseBuilder {
 					MyTransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
 					MyDataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
 					DataSource dataSource = dsFactory.getDataSource();
-					MyEnvironment.Builder environmentBuilder = new MyEnvironment.Builder(id).dataSource(dataSource);
+					MyEnvironment.Builder environmentBuilder = new MyEnvironment.Builder(id).dataSource(dataSource).transactionFactory(txFactory);
 					configuration.setEnvironment(environmentBuilder.build());
 				}
 			}
