@@ -36,7 +36,7 @@
 	    </foreach>
     </insert>
     
-    <update id="updateUser" parameterType="com.wolves.test.zerotoone.model.User">
+    <update id="updateUser" parameterType="com.wolves.test.zerotoone.vo.User">
     	update t_user
     	<set>
             <if test="adid != null" >

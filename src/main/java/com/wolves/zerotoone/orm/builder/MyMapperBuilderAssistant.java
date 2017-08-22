@@ -14,6 +14,8 @@ import org.apache.ibatis.executor.keygen.KeyGenerator;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ParameterMap;
 import org.apache.ibatis.mapping.ResultFlag;
+import org.apache.ibatis.mapping.ResultMap;
+import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.type.JdbcType;
@@ -63,9 +65,9 @@ public class MyMapperBuilderAssistant extends MyBaseBuilder {
 			JdbcType jdbcType, String nestedSelect, String nestedResultMap, String notNullColumn, String columnPrefix,
 			Class<? extends TypeHandler<?>> typeHandler, List<ResultFlag> flags, String resultSet, String foreignColumn,
 			boolean lazy) {
-		return new MyResultMapping.Builder(configuration, property, column, null).jdbcType(jdbcType)
-				.typeHandler(null).notNullColumns(parseMultipleColumnNames(notNullColumn)).foreignColumn(foreignColumn)
-				.lazy(lazy).build();
+		return new MyResultMapping.Builder(configuration, property, column, null).jdbcType(jdbcType).typeHandler(null)
+				.notNullColumns(parseMultipleColumnNames(notNullColumn)).foreignColumn(foreignColumn).lazy(lazy)
+				.build();
 	}
 
 	private Set<String> parseMultipleColumnNames(String columnName) {
@@ -144,7 +146,8 @@ public class MyMapperBuilderAssistant extends MyBaseBuilder {
 		return statement;
 	}
 
-	private MyParameterMap getStatementParameterMap(String parameterMapName, Class<?> parameterTypeClass, String statementId) {
+	private MyParameterMap getStatementParameterMap(String parameterMapName, Class<?> parameterTypeClass,
+			String statementId) {
 		parameterMapName = applyCurrentNamespace(parameterMapName, true);
 		MyParameterMap parameterMap = null;
 		if (parameterMapName != null) {
@@ -166,9 +169,25 @@ public class MyMapperBuilderAssistant extends MyBaseBuilder {
 		return false;
 	}
 
-	private List<MyResultMap> getStatementResultMaps(String resultMap, Class<?> resultType, String id) {
-		// TODO Auto-generated method stub
-		return null;
+	private List<MyResultMap> getStatementResultMaps(String resultMap, Class<?> resultType, String statementId) {
+		resultMap = applyCurrentNamespace(resultMap, true);
+
+		List<MyResultMap> resultMaps = new ArrayList<MyResultMap>();
+		if (resultMap != null) {
+			String[] resultMapNames = resultMap.split(",");
+			for (String resultMapName : resultMapNames) {
+				try {
+					resultMaps.add(configuration.getResultMap(resultMapName.trim()));
+				} catch (IllegalArgumentException e) {
+					throw new IncompleteElementException("Could not find result map " + resultMapName, e);
+				}
+			}
+		} else if (resultType != null) {
+			MyResultMap inlineResultMap = new MyResultMap.Builder(configuration, statementId + "-Inline", resultType,
+					new ArrayList<MyResultMapping>(), null).build();
+			resultMaps.add(inlineResultMap);
+		}
+		return resultMaps;
 	}
 
 }

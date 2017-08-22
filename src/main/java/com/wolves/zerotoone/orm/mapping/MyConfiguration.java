@@ -11,6 +11,7 @@ import java.util.Set;
 import org.apache.ibatis.builder.xml.XMLStatementBuilder;
 import org.apache.ibatis.plugin.InterceptorChain;
 import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.type.TypeAliasRegistry;
 
@@ -213,8 +214,7 @@ public class MyConfiguration {
 		return null;
 	}
 
-	public Object getObjectFactory() {
-		// TODO Auto-generated method stub
+	public ObjectFactory getObjectFactory() {
 		return null;
 	}
 
@@ -238,6 +238,15 @@ public class MyConfiguration {
 
 	public void addIncompleteStatement(MyXMLStatementBuilder incompleteStatement) {
 		incompleteStatements.add(incompleteStatement);
+	}
+
+	public boolean isUseActualParamName() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public MetaObject newMetaObject(Object value) {
+		return null;
 	}
 
 }

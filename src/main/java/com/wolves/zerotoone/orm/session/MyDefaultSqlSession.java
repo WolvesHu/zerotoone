@@ -1,9 +1,11 @@
 package com.wolves.zerotoone.orm.session;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.exceptions.ExceptionFactory;
 import org.apache.ibatis.exceptions.TooManyResultsException;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
@@ -89,17 +91,17 @@ public class MyDefaultSqlSession implements MySqlSession {
 
 	@Override
 	public MyConfiguration getConfiguration() {
-		return null;
+		return configuration;
 	}
 
 	@Override
 	public Connection getConnection() {
-		return null;
+		return executor.getTransaction().getConnection();
 	}
 
 	@Override
 	public <T> T getMapper(Class<T> type) {
-		 return configuration.<T>getMapper(type, this);
+		return configuration.<T>getMapper(type, this);
 	}
 
 }

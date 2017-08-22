@@ -171,7 +171,7 @@ public class MyMapperMethod {
 				this.returnType = method.getReturnType();
 			}
 			this.returnsVoid = void.class.equals(this.returnType);
-			this.returnsMany = null;
+			this.returnsMany = false;
 			this.returnsCursor = Cursor.class.equals(this.returnType);
 			this.mapKey = getMapKey(method);
 			this.returnsMap = (this.mapKey != null);

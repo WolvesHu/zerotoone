@@ -1,5 +1,9 @@
 package com.wolves.zerotoone.orm.executor;
 
-public class MyExecutor {
+import com.wolves.zerotoone.orm.session.MyDefaultSqlSession;
+
+public interface MyExecutor {
+
+	public MyDefaultSqlSession getTransaction();
 
 }

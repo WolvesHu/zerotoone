@@ -31,7 +31,7 @@ public class MyMapperProxyFactory<T> {
 	}
 
 	public T newInstance(MySqlSession sqlSession) {
-		final MyMapperProxy<T> mapperProxy = new MyMapperProxy<T>(sqlSession, mapperInterface, methodCache);
+		final MyMapperProxy<T> mapperProxy = new MyMapperProxy<T>( mapperInterface, methodCache,sqlSession);
 		return newInstance(mapperProxy);
 	}
 }
