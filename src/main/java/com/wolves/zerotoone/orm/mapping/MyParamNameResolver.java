@@ -23,9 +23,9 @@ public class MyParamNameResolver {
     final SortedMap<Integer, String> map = new TreeMap<Integer, String>();
     int paramCount = paramAnnotations.length;
     for (int paramIndex = 0; paramIndex < paramCount; paramIndex++) {
-      if (isSpecialParameter(paramTypes[paramIndex])) {
-        continue;
-      }
+//      if (isSpecialParameter(paramTypes[paramIndex])) {
+//        continue;
+//      }
       String name = null;
       for (Annotation annotation : paramAnnotations[paramIndex]) {
         if (annotation instanceof Param) {
@@ -51,15 +51,15 @@ public class MyParamNameResolver {
   }
 
   private String getActualParamName(Method method, int paramIndex) {
-    if (Jdk.parameterExists) {
-      return ParamNameUtil.getParamNames(method).get(paramIndex);
-    }
+//    if (Jdk.parameterExists) {
+//      return ParamNameUtil.getParamNames(method).get(paramIndex);
+//    }
     return null;
   }
 
-  private static boolean isSpecialParameter(Class<?> clazz) {
-    return RowBounds.class.isAssignableFrom(clazz) || ResultHandler.class.isAssignableFrom(clazz);
-  }
+//  private static boolean isSpecialParameter(Class<?> clazz) {
+//    return RowBounds.class.isAssignableFrom(clazz) || ResultHandler.class.isAssignableFrom(clazz);
+//  }
 
   public String[] getNames() {
     return names.values().toArray(new String[0]);
@@ -72,18 +72,18 @@ public class MyParamNameResolver {
     } else if (!hasParamAnnotation && paramCount == 1) {
       return args[names.firstKey()];
     } else {
-      final Map<String, Object> param = new ParamMap<Object>();
-      int i = 0;
-      for (Map.Entry<Integer, String> entry : names.entrySet()) {
-        param.put(entry.getValue(), args[entry.getKey()]);
-        // add generic param names (param1, param2, ...)
-        final String genericParamName = GENERIC_NAME_PREFIX + String.valueOf(i + 1);
-        // ensure not to overwrite parameter named with @Param
-        if (!names.containsValue(genericParamName)) {
-          param.put(genericParamName, args[entry.getKey()]);
-        }
-        i++;
-      }
+      final Map<String, Object> param = null;
+//      int i = 0;
+//      for (Map.Entry<Integer, String> entry : names.entrySet()) {
+//        param.put(entry.getValue(), args[entry.getKey()]);
+//        // add generic param names (param1, param2, ...)
+//        final String genericParamName = GENERIC_NAME_PREFIX + String.valueOf(i + 1);
+//        // ensure not to overwrite parameter named with @Param
+//        if (!names.containsValue(genericParamName)) {
+//          param.put(genericParamName, args[entry.getKey()]);
+//        }
+//        i++;
+//      }
       return param;
     }
   }

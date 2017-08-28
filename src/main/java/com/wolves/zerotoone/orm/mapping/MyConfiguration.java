@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.ibatis.builder.CacheRefResolver;
+import org.apache.ibatis.builder.ResultMapResolver;
+import org.apache.ibatis.builder.annotation.MethodResolver;
 import org.apache.ibatis.builder.xml.XMLStatementBuilder;
 import org.apache.ibatis.plugin.InterceptorChain;
 import org.apache.ibatis.reflection.MetaObject;
@@ -26,22 +29,23 @@ import com.wolves.zerotoone.orm.transaction.MyManagedTransactionFactory;
 import com.wolves.zerotoone.orm.transaction.MyTransaction;
 
 public class MyConfiguration {
-	protected final Map<String, MyParameterMap> parameterMaps = new MyStrictMap<MyParameterMap>(
-			"Parameter Maps collection");
+	protected final Map<String, MyParameterMap> parameterMaps = new MyStrictMap<MyParameterMap>("Parameter Maps collection");
 	protected MyEnvironment environment;
-	protected final Collection<MyXMLStatementBuilder> incompleteStatements = new LinkedList<MyXMLStatementBuilder>();
-	  
+
 	protected final InterceptorChain interceptorChain = new InterceptorChain();
 	protected ExecutorType defaultExecutorType = ExecutorType.SIMPLE;
 	protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
-	protected final Map<String, MyMappedStatement> mappedStatements = new MyStrictMap<MyMappedStatement>(
-			"Mapped Statements collection");
+	protected final Map<String, MyMappedStatement> mappedStatements = new MyStrictMap<MyMappedStatement>("Mapped Statements collection");
 	protected final Map<String, MyResultMap> resultMaps = new MyStrictMap<MyResultMap>("Result Maps collection");
 	protected Properties variables = new Properties();
 	protected final MyMapperRegistry mapperRegistry = new MyMapperRegistry(this);
-	protected final Map<String, MyXNode> sqlFragments = new MyStrictMap<MyXNode>(
-			"XML fragments parsed from previous mappers");
+	protected final Map<String, MyXNode> sqlFragments = new MyStrictMap<MyXNode>("XML fragments parsed from previous mappers");
 	protected final Set<String> loadedResources = new HashSet<String>();
+
+	protected final Collection<MyXMLStatementBuilder> incompleteStatements = new LinkedList<MyXMLStatementBuilder>();
+	protected final Collection<CacheRefResolver> incompleteCacheRefs = new LinkedList<CacheRefResolver>();
+	protected final Collection<ResultMapResolver> incompleteResultMaps = new LinkedList<ResultMapResolver>();
+	protected final Collection<MethodResolver> incompleteMethods = new LinkedList<MethodResolver>();
 
 	public MyConfiguration() {
 		typeAliasRegistry.registerAlias("UNPOOLED", MyUnpooledDataSourceFactory.class);
@@ -199,7 +203,46 @@ public class MyConfiguration {
 	}
 
 	public boolean hasStatement(String statementId) {
-		return false;
+		return hasStatement(statementId, true);
+	}
+
+	public boolean hasStatement(String statementName, boolean validateIncompleteStatements) {
+		if (validateIncompleteStatements) {
+			buildAllStatements();
+		}
+		return mappedStatements.containsKey(statementName);
+	}
+
+	/*
+	 * Parses all the unprocessed statement nodes in the cache. It is
+	 * recommended to call this method once all the mappers are added as it
+	 * provides fail-fast statement validation.
+	 */
+	protected void buildAllStatements() {
+		if (!incompleteResultMaps.isEmpty()) {
+			synchronized (incompleteResultMaps) {
+				// This always throws a BuilderException.
+				incompleteResultMaps.iterator().next().resolve();
+			}
+		}
+		if (!incompleteCacheRefs.isEmpty()) {
+			synchronized (incompleteCacheRefs) {
+				// This always throws a BuilderException.
+				incompleteCacheRefs.iterator().next().resolveCacheRef();
+			}
+		}
+		if (!incompleteStatements.isEmpty()) {
+			synchronized (incompleteStatements) {
+				// This always throws a BuilderException.
+				incompleteStatements.iterator().next().parseStatementNode();
+			}
+		}
+		if (!incompleteMethods.isEmpty()) {
+			synchronized (incompleteMethods) {
+				// This always throws a BuilderException.
+				incompleteMethods.iterator().next().resolve();
+			}
+		}
 	}
 
 	public MyMappedStatement getMappedStatement(String statementId) {

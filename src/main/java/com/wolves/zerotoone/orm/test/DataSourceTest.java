@@ -10,7 +10,6 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import com.wolves.test.zerotoone.dao.UserDAO;
 import com.wolves.zerotoone.orm.session.MySqlSession;
-import com.wolves.zerotoone.orm.session.factory.impl.MySessionFactory;
 import com.wolves.zerotoone.orm.session.factory.impl.MySessionFactoryBuilder;
 import com.wolves.zerotoone.orm.session.factory.impl.SessionFactory;
 
@@ -21,8 +20,9 @@ public class DataSourceTest {
 	private static ClassLoader loader = ClassLoader.getSystemClassLoader();
 	static {
 		try {
-//			 reader = Resources.getResourceAsReader("conf/orm.xml");
-//			 sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
+			reader = Resources.getResourceAsReader("conf/orm.xml");
+			sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
+			
 			InputStream stream = loader.getResourceAsStream("conf/orm.xml");
 			sessionfactory = new MySessionFactoryBuilder().build(stream);
 		} catch (Exception e) {
@@ -39,9 +39,9 @@ public class DataSourceTest {
 			System.out.println("================="+i+"=================");
 		}
 
-//		 SqlSession openSession = sqlSessionFactory.openSession();
-//		 UserDAO userDao = openSession.getMapper(UserDAO.class);
-//		 userDao.getUserById("297e7fa53bae1441013bb28e73835ffb");
+		SqlSession openSession = sqlSessionFactory.openSession();
+		UserDAO userDao = openSession.getMapper(UserDAO.class);
+		userDao.getUserById("297e7fa53bae1441013bb28e73835ffb");
 
 	}
 
