@@ -12,33 +12,56 @@ public class Customer {
 	}
 
 	public String statement() {
-		double totalAmount = 0;
-		int frequentRenterPoints = 0;
 		Enumeration<Rental> rentals = _rentals.elements();
-		String result = "Rental Record for" + get_name() + "\n";
+		String result = "Rental Record for " + get_name() + "\n";
 		while (rentals.hasMoreElements()) {
-			double thisAmount = 0;
 			Rental rental = rentals.nextElement();
-			thisAmount = rental.getCharge();
-			frequentRenterPoints++;
-			if((rental.get_movie().get_priceCode()==Movie.NEW_RELEASE) && rental.get_daysRented()>1) {
-				frequentRenterPoints++;
-			}
-			result += "\t" +rental.get_movie().get_title() + "\t" + String.valueOf(thisAmount)+"\n";
-			totalAmount += thisAmount;
+			result += "\t" +rental.get_movie().get_title() + "\t" + String.valueOf(rental.getCharge())+"\n";
 		}
 		
-		result +="Amount owed is " + String.valueOf(totalAmount)+"\n";
-		result +="You earned " +String.valueOf(frequentRenterPoints)+" frequent renter points";
+		result +="Amount owed is " + String.valueOf(getTotalAmount())+"\n";
+		result +="You earned " +String.valueOf(getTotalFrequentRenterPoints())+" frequent renter points";
 		return result;
 	}
 
-	
+	public String htmlStatement() {
+		Enumeration<Rental> rentals = _rentals.elements();
+		String result = "<h1>Rental Record for<em> " + get_name() + "</em><h1><p>\n";
+		while (rentals.hasMoreElements()) {
+			Rental rental = rentals.nextElement();
+			result += rental.get_movie().get_title() + ":" + String.valueOf(rental.getCharge())+"<br>\n";
+		}
+		
+		result +="<p>Amount owed is <em>" + String.valueOf(getTotalAmount())+"</em><p>\n";
+		result +="You earned <em>" +String.valueOf(getTotalFrequentRenterPoints())+" </em>frequent renter points<p>";
+		return result;
+		
+	}
+	private int getTotalFrequentRenterPoints() {
+		int result = 0;
+		Enumeration<Rental> rentals = _rentals.elements();
+		while (rentals.hasMoreElements()) {
+			Rental rental = rentals.nextElement();
+			result += rental.getFrequentRenterPoints();
+		}
+		
+		return result;
+	}
+
+	private double getTotalAmount() {
+		double result = 0;
+		Enumeration<Rental> rentals = _rentals.elements();
+		while (rentals.hasMoreElements()) {
+			Rental rental = rentals.nextElement();
+			result += rental.getCharge();
+		}
+		return result;
+	}
 
 	public void addRental(Rental _rental) {
 		_rentals.add(_rental);
 	}
-
+ 
 	public String get_name() {
 		return _name;
 	}
